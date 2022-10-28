@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getData() {
+        mySharedPref.clearData();
 
         Call<ArrayList<Response>> responseDetails = apiInterface.getCategories("");
         responseDetails.enqueue(new Callback<ArrayList<Response>>() {

@@ -29,22 +29,28 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestionActivity extends AppCompatActivity {
+    final int NUMBER_OF_RADIOBUTTONS_TO_ADD = 4;//Change it for other number of RadioButtons
+    RadioButton[] radioButton;
+    RadioGroup radioGroup;
+
+    String correctAns, wrongAns1, wrongAns2, wrongAns3;
+    String correctAnswer;
+    String radioButtonSelectedAnswer;
 
     TextView textView;
-    RadioGroup radioGroup;
-    RadioButton radioButton1, radioButton2, radioButton3, radioButton4;
+
     AppCompatButton buttonNext;
 
     String baseURL = "https://the-trivia-api.com/api/";
     ApiInterface apiInterface;
     String selectedCategory;
-    String questionID, correctAnswer;
+    String questionID;
     int totalNumber;
     MySharedPref mySharedPref;
 
     LoadingProgressBarDialog loadingProgressBarDialog;
 
-    private  boolean checkClick;
+    private boolean checkClick;
 
 
     @Override
@@ -52,19 +58,15 @@ public class QuestionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
+        radioGroup = (RadioGroup) findViewById(R.id.radGroup);
 
-        checkClick=false;
+        checkClick = false;
 
         loadingProgressBarDialog = new LoadingProgressBarDialog(this);
 
 
         textView = findViewById(R.id.tvQuestionAct);
         radioGroup = findViewById(R.id.radGroup);
-        radioButton1 = findViewById(R.id.radBtnOption1);
-        radioButton2 = findViewById(R.id.radBtnOption2);
-        radioButton3 = findViewById(R.id.radBtnOption3);
-        radioButton4 = findViewById(R.id.radBtnOption4);
-
         buttonNext = findViewById(R.id.btnNext);
 
 
@@ -92,6 +94,7 @@ public class QuestionActivity extends AppCompatActivity {
 
     }
 
+
     private void getData() {
         loadingProgressBarDialog.startProgressBarLoading();
 
@@ -101,15 +104,54 @@ public class QuestionActivity extends AppCompatActivity {
             public void onResponse(Call<ArrayList<Response>> call, retrofit2.Response<ArrayList<Response>> response) {
                 ArrayList<Response> responses = response.body();
 
+                correctAns=responses.get(0).getCorrectAnswer();
+                wrongAns1=responses.get(0).getIncorrectAnswers().get(0);
+                wrongAns2=responses.get(0).getIncorrectAnswers().get(1);
+                wrongAns3=responses.get(0).getIncorrectAnswers().get(2);
+
+                correctAnswer=responses.get(0).getCorrectAnswer();
+
+                String [] options= {wrongAns1, wrongAns2, wrongAns3, correctAns};
+
+                //Initializing the RadioButtons
+                radioButton = new RadioButton[NUMBER_OF_RADIOBUTTONS_TO_ADD];
+                for (int i = 0; i < NUMBER_OF_RADIOBUTTONS_TO_ADD; i++) {
+                    radioButton[i] = new RadioButton(QuestionActivity.this);
+
+                    //Text can be loaded here
+                    radioButton[i].setText(options[i]);
+
+                }
+
+                //Random Swapping
+                for (int i = 0; i < 4; i++) {//this loop is randomly changing values 4 times
+                    int swap_ind1 = ((int) (Math.random() * 10) % NUMBER_OF_RADIOBUTTONS_TO_ADD);
+                    int swap_ind2 = ((int) (Math.random() * 10) % NUMBER_OF_RADIOBUTTONS_TO_ADD);
+                    RadioButton temp = radioButton[swap_ind1];
+                    radioButton[swap_ind1] = radioButton[swap_ind2];
+                    radioButton[swap_ind2] = temp;
+                }
+
+
+                //Adding RadioButtons in RadioGroup
+                for (int i = 0; i < NUMBER_OF_RADIOBUTTONS_TO_ADD; i++) {
+                    radioGroup.addView(radioButton[i]);
+                }
+
+
+
+
                 textView.setText(responses.get(0).getQuestion());
-                radioButton1.setText(responses.get(0).getCorrectAnswer());
-                radioButton2.setText(responses.get(0).getIncorrectAnswers().get(0));
-                radioButton3.setText(responses.get(0).getIncorrectAnswers().get(1));
-                radioButton4.setText(responses.get(0).getIncorrectAnswers().get(2));
+
+
+                textView.setText(responses.get(0).getQuestion());
+
 
                 questionID = responses.get(0).getId();
+                Toast.makeText(QuestionActivity.this, "Correct ans "+correctAnswer, Toast.LENGTH_SHORT).show();
 
-                // Toast.makeText(QuestionActivity.this, "Response successful for Question act", Toast.LENGTH_SHORT).show();
+
+               // Toast.makeText(QuestionActivity.this, "Response successful for Question act", Toast.LENGTH_SHORT).show();
                 loadingProgressBarDialog.dismissProgressBarDialog();
 
 
@@ -134,42 +176,43 @@ public class QuestionActivity extends AppCompatActivity {
             totalNumber = 0;
         }
 
-        //checking radiobutton id & setting condition
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                int id = radioGroup.getCheckedRadioButtonId();
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
 
-                switch (id) {
-
-                    case R.id.radBtnOption1:
-
+                // This will get the radiobutton that has changed in its check state
+                RadioButton checkedRadioButton = (RadioButton)radioGroup.findViewById(id);
+                // This puts the value (true/false) into the variable
+                boolean isChecked = checkedRadioButton.isChecked();
+                // If the radiobutton that has changed in check state is now checked...
+                if (isChecked)
+                {
+                    // Get the text of selected radiobutton through checkedRadioButton
+                    radioButtonSelectedAnswer=checkedRadioButton.getText().toString();
+                    if(radioButtonSelectedAnswer.equals(correctAnswer)){
                         totalNumber = totalNumber + 5;
                         mySharedPref.putInt("passingValue", totalNumber);
 
-                    case R.id.radBtnOption2:
-
-                    case R.id.radBtnOption3:
-
-                    case R.id.radBtnOption4:
-
+                    }
                 }
+
             }
         });
 
-        Log.e("Total number", " number "+totalNumber);
+
+        Log.e("Total number", " number " + totalNumber);
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                checkClick=true;
+                checkClick = true;
 
                 Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
                 startActivity(intent);
 
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
+
                 finish();
 
             }
@@ -179,11 +222,10 @@ public class QuestionActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(!checkClick) {
+                if (!checkClick) {
 
                     buttonNext.performClick();
                 }
-
             }
         }, 8000);
 
@@ -193,9 +235,9 @@ public class QuestionActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         mySharedPref.clearData();
-        startActivity(new Intent(QuestionActivity.this,MainActivity.class));
+        startActivity(new Intent(QuestionActivity.this, MainActivity.class));
 
-        //Code to exit app from home screen instantly
+        //Code to exit app instantly
         /*moveTaskToBack(true);
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);*/
