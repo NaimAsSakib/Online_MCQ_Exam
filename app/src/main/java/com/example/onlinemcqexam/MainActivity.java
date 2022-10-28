@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mySharedPref = new MySharedPref(this);
+        mySharedPref.clearData();
 
         recyclerView = findViewById(R.id.rcvMainAct);
         recyclerView.setHasFixedSize(true);
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(programAdapter);*/
         networkLibraryInitializer();
         getData();
-        mySharedPref.clearData();
+
     }
 
     private void networkLibraryInitializer() {
@@ -95,5 +96,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
+    }
 }

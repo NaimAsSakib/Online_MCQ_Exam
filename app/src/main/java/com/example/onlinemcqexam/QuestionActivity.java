@@ -5,6 +5,9 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -15,6 +18,8 @@ import com.example.onlinemcqexam.model.ApiInterface;
 import com.example.onlinemcqexam.model.Response;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -39,13 +44,16 @@ public class QuestionActivity extends AppCompatActivity {
 
     LoadingProgressBarDialog loadingProgressBarDialog;
 
+    private  boolean checkClick;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
-        mySharedPref = new MySharedPref(this);
+
+        checkClick=false;
 
         loadingProgressBarDialog = new LoadingProgressBarDialog(this);
 
@@ -101,7 +109,7 @@ public class QuestionActivity extends AppCompatActivity {
 
                 questionID = responses.get(0).getId();
 
-                // Toast.makeText(QuestionActivity.this, "Response successful", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(QuestionActivity.this, "Response successful for Question act", Toast.LENGTH_SHORT).show();
                 loadingProgressBarDialog.dismissProgressBarDialog();
 
 
@@ -116,6 +124,7 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void checkingAnswer() {
+        mySharedPref = new MySharedPref(this);
 
         //condition for checking previous mark
         if (mySharedPref.getInt("passingValue") != null) {
@@ -125,10 +134,9 @@ public class QuestionActivity extends AppCompatActivity {
             totalNumber = 0;
         }
 
-
         //checking radiobutton id & setting condition
-
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 int id = radioGroup.getCheckedRadioButtonId();
@@ -141,23 +149,24 @@ public class QuestionActivity extends AppCompatActivity {
                         mySharedPref.putInt("passingValue", totalNumber);
 
                     case R.id.radBtnOption2:
-                        mySharedPref.putInt("passingValue", totalNumber);
 
                     case R.id.radBtnOption3:
-                        mySharedPref.putInt("passingValue", totalNumber);
 
                     case R.id.radBtnOption4:
-                        mySharedPref.putInt("passingValue", totalNumber);
 
                 }
             }
         });
 
+        Log.e("Total number", " number "+totalNumber);
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(QuestionActivity.this, QuestionActivity.class);
+
+                checkClick=true;
+
+                Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
                 startActivity(intent);
 
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
@@ -165,11 +174,31 @@ public class QuestionActivity extends AppCompatActivity {
 
             }
         });
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!checkClick) {
+
+                    buttonNext.performClick();
+                }
+
+            }
+        }, 8000);
+
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         mySharedPref.clearData();
+        startActivity(new Intent(QuestionActivity.this,MainActivity.class));
+
+        //Code to exit app from home screen instantly
+        /*moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);*/
     }
+
 }
