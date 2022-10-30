@@ -4,6 +4,121 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="30dp"
     tools:context=".ResultActivity">
+
+    <TextView
+        android:id="@+id/totalMarksObtained"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total marks obtained: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/totalMarksObtainedNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/totalMarksObtained"
+        app:layout_constraintBottom_toBottomOf="@id/totalMarksObtained"
+        app:layout_constraintStart_toEndOf="@id/totalMarksObtained"/>
+
+    <TextView
+        android:id="@+id/totalMarks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" out of "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/totalMarksObtainedNumber"
+        app:layout_constraintTop_toTopOf="@id/totalMarksObtainedNumber"
+        app:layout_constraintBottom_toBottomOf="@id/totalMarksObtainedNumber"/>
+
+
+    <TextView
+        android:id="@+id/totalMarksNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="25"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/totalMarks"
+        app:layout_constraintTop_toTopOf="@id/totalMarks"
+        app:layout_constraintBottom_toBottomOf="@id/totalMarks"/>
+
+    <TextView
+        android:id="@+id/totalQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total question Answered: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/totalMarksObtained"
+        app:layout_constraintStart_toStartOf="@+id/totalMarksObtained"/>
+    <TextView
+        android:id="@+id/totalQuestionNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+       app:layout_constraintTop_toTopOf="@id/totalQuestion"
+        app:layout_constraintBottom_toBottomOf="@id/totalQuestion"
+        app:layout_constraintStart_toEndOf="@id/totalQuestion"/>
+
+    <TextView
+        android:id="@+id/totalCorrectAns"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total number of correct answer: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/totalQuestion"
+        app:layout_constraintStart_toStartOf="@id/totalQuestion"/>
+
+    <TextView
+        android:id="@+id/totalCorrectAnsNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+       app:layout_constraintTop_toTopOf="@id/totalCorrectAns"
+        app:layout_constraintBottom_toBottomOf="@id/totalCorrectAns"
+        app:layout_constraintStart_toEndOf="@id/totalCorrectAns"/>
+
+    <TextView
+        android:id="@+id/totalIncorrectAns"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total number of incorrect answer: "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/totalCorrectAns"
+        app:layout_constraintStart_toStartOf="@id/totalCorrectAns"/>
+    <TextView
+        android:id="@+id/totalIncorrectAnsNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/totalIncorrectAns"
+        app:layout_constraintBottom_toBottomOf="@id/totalIncorrectAns"
+        app:layout_constraintStart_toEndOf="@id/totalIncorrectAns"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

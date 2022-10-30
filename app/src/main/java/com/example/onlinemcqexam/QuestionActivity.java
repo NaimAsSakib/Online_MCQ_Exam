@@ -51,8 +51,6 @@ public class QuestionActivity extends AppCompatActivity {
 
     private boolean checkClick;
 
-    private int countClick;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +81,6 @@ public class QuestionActivity extends AppCompatActivity {
         //method to check answer & passing marks
         checkingAnswer();
 
-        //method to handle next button click & setting timer if not clicked
-        nextBtnClickHandling();
     }
 
     private void networkLibraryInitializer() {
@@ -147,7 +143,7 @@ public class QuestionActivity extends AppCompatActivity {
 
                 tvQuestion.setText(responses.get(0).getQuestion());  //setting question to textView
 
-               // questionID = responses.get(0).getId();
+                // questionID = responses.get(0).getId();
                 Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
                 // Toast.makeText(QuestionActivity.this, "Response successful for Question act", Toast.LENGTH_SHORT).show();
 
@@ -164,6 +160,7 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void checkingAnswer() {
+
 
         //condition for checking previously saved mark for correct ans
         if (mySharedPref.getInt("passingValue") != null) {
@@ -185,11 +182,7 @@ public class QuestionActivity extends AppCompatActivity {
                 if (isChecked) {
                     // Get the text of selected radiobutton through checkedRadioButton
                     radioButtonSelectedAnswer = checkedRadioButton.getText().toString();
-                    if (radioButtonSelectedAnswer.equals(correctAns)) {
-                        totalNumber = totalNumber + 5;
-                        mySharedPref.putInt("passingValue", totalNumber);
 
-                    }
                 }
 
             }
@@ -198,20 +191,25 @@ public class QuestionActivity extends AppCompatActivity {
 
         Log.e("Total number", " number " + totalNumber);
 
-    }
-
-    private void nextBtnClickHandling(){
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 checkClick = true;
+
+                if (radioButtonSelectedAnswer != null) {
+                    if (radioButtonSelectedAnswer.equals(correctAns) && checkClick) {
+                        totalNumber = totalNumber + 5;
+                        mySharedPref.putInt("passingValue", totalNumber);
+
+                    }
+                }
 
                 Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
                 startActivity(intent);
 
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
 
+                //method for checking & counting click event
                 setCheckTotalClick();
 
                 finish();
@@ -219,20 +217,21 @@ public class QuestionActivity extends AppCompatActivity {
             }
         });
 
-
+        //timer to go to next question automatically after certain time
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                //if user click button it means checkClick is true, so timer will not work. if user doesn't click checkClick will be false it will perform button click auto
                 if (!checkClick) {
-
                     buttonNext.performClick();
                 }
             }
         }, 8000);
-
     }
 
+
     private void setCheckTotalClick() {
+        int countClick;
         if (mySharedPref.getInt("countButtonClick") != null) {
             countClick = mySharedPref.getInt("countButtonClick");
             countClick = countClick + 1;
@@ -243,8 +242,9 @@ public class QuestionActivity extends AppCompatActivity {
             countClick = 0;
         }
 
-        if (mySharedPref.getInt("countButtonClick") == 3) {
+        if (mySharedPref.getInt("countButtonClick") == 4) {
             Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
+            intent1.putExtra("totalQuestion", mySharedPref.getInt("countButtonClick"));
             startActivity(intent1);
 
         }
@@ -261,6 +261,5 @@ public class QuestionActivity extends AppCompatActivity {
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);*/
     }
-
 
 }
