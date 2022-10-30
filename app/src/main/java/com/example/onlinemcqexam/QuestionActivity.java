@@ -237,7 +237,7 @@ public class QuestionActivity extends AppCompatActivity {
             // Log.e("clicked value"," value "+countClick);
 
         } else {
-            countClick = 0;
+            countClick = 100;
         }
 
         if (mySharedPref.getInt("countButtonClick") == 4) {
