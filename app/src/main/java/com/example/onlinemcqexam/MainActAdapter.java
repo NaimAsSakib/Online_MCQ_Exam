@@ -12,6 +12,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.onlinemcqexam.model.Response;
+import com.example.onlinemcqexam.model.ResponseCategory;
 
 import java.util.ArrayList;
 
@@ -19,16 +20,24 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
 
     Context context;
    // String[] categoryName;
-    ArrayList<Response> responses;
+   // ArrayList<Response> responses;
+    //ResponseCategory responseCategory;
+
+    ArrayList<String> arrayList=new ArrayList<>();
 
     /*public MainActAdapter(Context context, String[] categoryName) {
         this.context = context;
         this.categoryName = categoryName;
     }*/
 
-    public MainActAdapter(Context context, ArrayList<Response> responses) {
+   /* public MainActAdapter(Context context, ArrayList<Response> responses) {
         this.context = context;
         this.responses = responses;
+    }*/
+
+    public MainActAdapter(Context context, ArrayList<String> arrayList) {
+        this.context = context;
+        this.arrayList = arrayList;
     }
 
     public class Viewholder extends RecyclerView.ViewHolder {
@@ -59,7 +68,7 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
 
       //  holder.textView.setText(categoryName[position]);
 
-        Response item=responses.get(position);
+       /* Response item=responses.get(position);
         holder.textView.setText(item.getCategory());
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -71,12 +80,24 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
                 context.startActivity(intent);
 
             }
+        });*/
+
+        holder.textView.setText(arrayList.get(position));
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, QuestionActivity.class);
+                String categoryName= arrayList.get(position);
+                intent.putExtra("categoryName",categoryName);
+                context.startActivity(intent);
+
+            }
         });
 
     }
 
     @Override
     public int getItemCount() {
-        return responses.size();
+        return arrayList.size();
     }
 }

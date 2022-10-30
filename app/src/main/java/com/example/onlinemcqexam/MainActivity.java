@@ -9,15 +9,22 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.onlinemcqexam.model.ApiInterface;
-import com.example.onlinemcqexam.model.Response;
+import com.example.onlinemcqexam.model.ResponseCategory;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -33,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
     String baseURL = "https://the-trivia-api.com/api/";
     ApiInterface apiInterface;
-    HashMap<String, String> hashMap;
     MySharedPref mySharedPref;
 
     @Override
@@ -54,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         /*programAdapter = new MainActAdapter(this, categoryName);
         recyclerView.setAdapter(programAdapter);*/
+
+        //API calling
         networkLibraryInitializer();
         getData();
 
@@ -74,27 +82,54 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void getData() {
-        mySharedPref.clearData();
+        mySharedPref.clearData();  // clearing previous data from shared pref
 
-        Call<ArrayList<Response>> responseDetails = apiInterface.getCategories("");
-        responseDetails.enqueue(new Callback<ArrayList<Response>>() {
+        Call<ResponseBody> responseCategoryDetails = apiInterface.getCategories();
+        responseCategoryDetails.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ArrayList<Response>> call, retrofit2.Response<ArrayList<Response>> response) {
-                ArrayList<Response> responses = response.body();
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                // See Json & pojo ResponseCategory data first, Json is object type but I can't get the keys in adapter. It's backend fault. Bad but rare type Api.
+                // I need the keys in rcv adapter, not the List<> type values within the keys. So, General API call methods won't work.
 
-                programAdapter = new MainActAdapter(MainActivity.this, responses);
-                recyclerView.setAdapter(programAdapter);
-                Toast.makeText(MainActivity.this, "Response successful", Toast.LENGTH_SHORT).show();
+                //Means I can't use Pojo for getting data as pojo/json is faulty. Rather I have to convert full response body into String.
+                //Then I have to keep that value in hashmap within an arrayList as in Jason values are in List<>, I will keep keys in hashmap keys.
+                // Then hashmap a for loop chaliye key gulo niye adapter a set korbo. Let's see step by step
 
+                try {
+                    String responseCategories = response.body().string(); //converting response body into String
+
+                    //Next three lines are for keeping that string into hashmap, defining hashmap type,
+                    // converting the string into response again within hashmap to get all data within hashmap
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<Map<String, ArrayList<String>>>() {
+                    }.getType();
+                    Map<String, ArrayList<String>> myMap = gson.fromJson(responseCategories, type);
+
+                    ArrayList<String> arrayList = new ArrayList<>(); //taking an empty arraylist
+
+                    //this is the way of using for loop for getting key/value from hashmap, as general for loop doesn't work for hashmap
+                    for (Map.Entry<String, ArrayList<String>> mapElement : myMap.entrySet()) {
+                        arrayList.add(mapElement.getKey());  //keeping hashmap keys in arrayList as I need those keys
+                    }
+                    //setting that arrayList in adapter
+                    programAdapter = new MainActAdapter(MainActivity.this, arrayList);
+                    recyclerView.setAdapter(programAdapter);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //Toast.makeText(MainActivity.this, "Response successful", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(Call<ArrayList<Response>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failed to get data", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
 
             }
         });
+
     }
 
     @Override
