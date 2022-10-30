@@ -25,6 +25,4 @@ public interface ApiInterface {
                                         @Query("limit") int limit );
 
 
-
-
 }

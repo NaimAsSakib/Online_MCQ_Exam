@@ -65,7 +65,6 @@ public class QuestionActivity extends AppCompatActivity {
 
         loadingProgressBarDialog = new LoadingProgressBarDialog(this);
 
-
         tvQuestion = findViewById(R.id.tvQuestionAct);
         radioGroup = findViewById(R.id.radGroup);
         buttonNext = findViewById(R.id.btnNext);
@@ -80,7 +79,6 @@ public class QuestionActivity extends AppCompatActivity {
 
         //method to check answer & passing marks
         checkingAnswer();
-
     }
 
     private void networkLibraryInitializer() {
@@ -218,7 +216,7 @@ public class QuestionActivity extends AppCompatActivity {
         });
 
         //timer to go to next question automatically after certain time
-        new Handler().postDelayed(new Runnable() {
+       /* new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 //if user click button it means checkClick is true, so timer will not work. if user doesn't click checkClick will be false it will perform button click auto
@@ -226,7 +224,7 @@ public class QuestionActivity extends AppCompatActivity {
                     buttonNext.performClick();
                 }
             }
-        }, 8000);
+        }, 80000);*/
     }
 
 
@@ -252,9 +250,10 @@ public class QuestionActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+       // super.onBackPressed();
         mySharedPref.clearData();
         startActivity(new Intent(QuestionActivity.this, MainActivity.class));
+        finish();
 
         //Code to exit app instantly
         /*moveTaskToBack(true);
