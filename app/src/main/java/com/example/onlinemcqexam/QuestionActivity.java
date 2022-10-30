@@ -38,7 +38,7 @@ public class QuestionActivity extends AppCompatActivity {
 
     TextView tvQuestion;
 
-    AppCompatButton buttonNext;
+    AppCompatButton buttonNext, btnSubmit;
 
     String baseURL = "https://the-trivia-api.com/api/";
     ApiInterface apiInterface;
@@ -64,6 +64,8 @@ public class QuestionActivity extends AppCompatActivity {
         checkClick = false;
 
         loadingProgressBarDialog = new LoadingProgressBarDialog(this);
+
+        btnSubmit = findViewById(R.id.btnSubmit);
 
         tvQuestion = findViewById(R.id.tvQuestionAct);
         radioGroup = findViewById(R.id.radGroup);
@@ -208,10 +210,39 @@ public class QuestionActivity extends AppCompatActivity {
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
 
                 //method for checking & counting click event
-                setCheckTotalClick();
+               // setCheckTotalClick();
 
                 finish();
 
+            }
+        });
+
+
+        //code for counting next button click, handling and passing data when next & submit buttons are clicked
+        int countClick;
+        if (mySharedPref.getInt("countButtonClick") != null) {
+            countClick = mySharedPref.getInt("countButtonClick");
+            countClick = countClick + 1;
+            mySharedPref.putInt("countButtonClick", countClick);
+            // Log.e("clicked value"," value "+countClick);
+
+        } else {
+            countClick = 0;
+        }
+
+        if (mySharedPref.getInt("countButtonClick") == 5) {
+            buttonNext.setVisibility(View.GONE);
+            btnSubmit.setVisibility(View.VISIBLE);
+        }
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                totalNumber = totalNumber + 5;
+                mySharedPref.putInt("passingValue", totalNumber);
+                Log.e("total number ", "btnSubmit "+totalNumber);
+                Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
+                intent1.putExtra("totalQuestion", mySharedPref.getInt("countButtonClick"));
+                startActivity(intent1);
             }
         });
 
@@ -224,33 +255,13 @@ public class QuestionActivity extends AppCompatActivity {
                     buttonNext.performClick();
                 }
             }
-        }, 80000);*/
+        }, 8000);*/
     }
 
-
-    private void setCheckTotalClick() {
-        int countClick;
-        if (mySharedPref.getInt("countButtonClick") != null) {
-            countClick = mySharedPref.getInt("countButtonClick");
-            countClick = countClick + 1;
-            mySharedPref.putInt("countButtonClick", countClick);
-            // Log.e("clicked value"," value "+countClick);
-
-        } else {
-            countClick = 0;
-        }
-
-        if (mySharedPref.getInt("countButtonClick") == 4) {
-            Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
-            intent1.putExtra("totalQuestion", mySharedPref.getInt("countButtonClick"));
-            startActivity(intent1);
-
-        }
-    }
 
     @Override
     public void onBackPressed() {
-       // super.onBackPressed();
+        // super.onBackPressed();
         mySharedPref.clearData();
         startActivity(new Intent(QuestionActivity.this, MainActivity.class));
         finish();
