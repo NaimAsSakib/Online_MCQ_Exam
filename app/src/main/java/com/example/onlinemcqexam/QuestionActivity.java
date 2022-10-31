@@ -36,24 +36,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestionActivity extends AppCompatActivity {
     final int totalNumberOfRadioButton = 4;  //total number of RadioButtons
-    RadioButton[] radioButton;  //Array of radioButtons
-    RadioGroup radioGroup;
+    private RadioButton[] radioButton;  //Array of radioButtons
+    private RadioGroup radioGroup;
 
-    String correctAns, wrongAns1, wrongAns2, wrongAns3;
-    String radioButtonSelectedAnswer;
+    private String correctAns, wrongAns1, wrongAns2, wrongAns3;
+    private String radioButtonSelectedAnswer;
 
-    TextView tvQuestion;
+    private TextView tvQuestion;
 
-    AppCompatButton buttonNext, btnSubmit;
+    private AppCompatButton buttonNext, btnSubmit;
 
-    String baseURL = "https://the-trivia-api.com/api/";
-    ApiInterface apiInterface;
-    String selectedCategory;
-    String questionID;
+    private String baseURL = "https://the-trivia-api.com/api/";
+    private ApiInterface apiInterface;
+    private String selectedCategory;
     private int totalNumber;
     private MySharedPref mySharedPref;
 
-    LoadingProgressBarDialog loadingProgressBarDialog;
+    private LoadingProgressBarDialog loadingProgressBarDialog;
 
     private boolean checkClick;
 
@@ -87,8 +86,6 @@ public class QuestionActivity extends AppCompatActivity {
         //in if() condition is for calling the API only once for response value 0, save the response in a String in getData() which has 5 values/index/questions
         //in else condition convert the saved String response to Json object again and show the value from index 1 to 5 by calling the same activity again & again
         if (mySharedPref.getInt("countClickValueIndex") == 0) {
-            Toast.makeText(QuestionActivity.this, "response successful online  index " + changeResponseIndex, Toast.LENGTH_SHORT).show();
-
             networkLibraryInitializer();
             getData();
             changeResponseIndex = 1; //this variable is for changing response index everytime dynamically
