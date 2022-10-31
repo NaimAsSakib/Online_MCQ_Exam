@@ -41,11 +41,14 @@ public class MainActivity extends AppCompatActivity {
     String baseURL = "https://the-trivia-api.com/api/";
     ApiInterface apiInterface;
     MySharedPref mySharedPref;
+    LoadingProgressBarDialog loadingProgressBarDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loadingProgressBarDialog=new LoadingProgressBarDialog(this);
 
         mySharedPref = new MySharedPref(this);
         mySharedPref.clearData();
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getData() {
+        loadingProgressBarDialog.startProgressBarLoading();
         mySharedPref.clearData();  // clearing previous data from shared pref
 
         Call<ResponseBody> responseCategoryDetails = apiInterface.getCategories();
@@ -120,12 +124,14 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                loadingProgressBarDialog.dismissProgressBarDialog();
                 //Toast.makeText(MainActivity.this, "Response successful", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                loadingProgressBarDialog.dismissProgressBarDialog();
+                Toast.makeText(MainActivity.this, "Please Check your internet connection", Toast.LENGTH_SHORT).show();
 
             }
         });
