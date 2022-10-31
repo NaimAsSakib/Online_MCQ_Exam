@@ -53,13 +53,9 @@ public class QuestionActivity extends AppCompatActivity {
     private MySharedPref mySharedPref;
 
     private LoadingProgressBarDialog loadingProgressBarDialog;
-
     private boolean checkClick;
-
     int countClick;
-
     int changeResponseIndex;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
