@@ -1,5 +1,7 @@
 package com.example.onlinemcqexam;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -18,7 +20,8 @@ import java.util.ArrayList;
 
 public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewholder> {
 
-    Context context;
+    //Context context;
+    Activity context;
    // String[] categoryName;
    // ArrayList<Response> responses;
     //ResponseCategory responseCategory;
@@ -35,7 +38,7 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
         this.responses = responses;
     }*/
 
-    public MainActAdapter(Context context, ArrayList<String> arrayList) {
+    public MainActAdapter(Activity context, ArrayList<String> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
     }
@@ -64,7 +67,7 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MainActAdapter.Viewholder holder, int position) {
+    public void onBindViewHolder(@NonNull MainActAdapter.Viewholder holder, @SuppressLint("RecyclerView") int position) {
 
       //  holder.textView.setText(categoryName[position]);
 
@@ -90,7 +93,6 @@ public class MainActAdapter extends RecyclerView.Adapter<MainActAdapter.Viewhold
                 String categoryName= arrayList.get(position);
                 intent.putExtra("categoryName",categoryName);
                 context.startActivity(intent);
-
             }
         });
 

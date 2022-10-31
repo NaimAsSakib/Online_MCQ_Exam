@@ -268,7 +268,7 @@ public class QuestionActivity extends AppCompatActivity {
                     }
                 }
 
-                Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
+                Intent intent = new Intent(QuestionActivity.this, QuestionActivity.class);
                 startActivity(intent);
 
                // Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
@@ -298,6 +298,7 @@ public class QuestionActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
                 intent1.putExtra("totalQuestion", countClick);
                 startActivity(intent1);
+                finish();
             }
         });
 

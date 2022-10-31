@@ -53,9 +53,7 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         mySharedPref.clearData();
-        Intent intent=new Intent(ResultActivity.this,MainActivity.class);
-        startActivity(intent);
+        super.onBackPressed();
     }
 }
