@@ -218,7 +218,8 @@ public class QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ArrayList<Response>> call, Throwable t) {
-                Toast.makeText(QuestionActivity.this, "Response failed for question Act", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuestionActivity.this, "Please check your internet connection", Toast.LENGTH_SHORT).show();
+                loadingProgressBarDialog.dismissProgressBarDialog();
 
             }
         });
