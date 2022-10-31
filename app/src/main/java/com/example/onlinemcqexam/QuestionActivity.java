@@ -50,6 +50,7 @@ public class QuestionActivity extends AppCompatActivity {
     LoadingProgressBarDialog loadingProgressBarDialog;
 
     private boolean checkClick;
+    int countClick;
 
 
     @Override
@@ -154,6 +155,7 @@ public class QuestionActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ArrayList<Response>> call, Throwable t) {
                 Toast.makeText(QuestionActivity.this, "Response failed for question Act", Toast.LENGTH_SHORT).show();
+                loadingProgressBarDialog.dismissProgressBarDialog();
 
             }
         });
@@ -161,14 +163,6 @@ public class QuestionActivity extends AppCompatActivity {
 
     private void checkingAnswer() {
 
-
-        //condition for checking previously saved mark for correct ans
-        if (mySharedPref.getInt("passingValue") != null) {
-            totalNumber = mySharedPref.getInt("passingValue");
-
-        } else {
-            totalNumber = 0;
-        }
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -187,6 +181,14 @@ public class QuestionActivity extends AppCompatActivity {
 
             }
         });
+
+        //condition for checking previously saved mark for correct ans
+        if (mySharedPref.getInt("passingValue") != null) {
+            totalNumber = mySharedPref.getInt("passingValue");
+
+        } else {
+            totalNumber = 0;
+        }
 
 
         Log.e("Total number", " number " + totalNumber);
@@ -209,9 +211,6 @@ public class QuestionActivity extends AppCompatActivity {
 
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
 
-                //method for checking & counting click event
-               // setCheckTotalClick();
-
                 finish();
 
             }
@@ -219,21 +218,24 @@ public class QuestionActivity extends AppCompatActivity {
 
 
         //code for counting next button click, handling and passing data when next & submit buttons are clicked
-        int countClick;
-        if (mySharedPref.getInt("countButtonClick") != null) {
+       /* if (mySharedPref.getInt("countButtonClick") != null) {
+            //Log.e("clicked value"," value "+mySharedPref.getInt("countButtonClick"));
             countClick = mySharedPref.getInt("countButtonClick");
             countClick = countClick + 1;
-            mySharedPref.putInt("countButtonClick", countClick);
-            // Log.e("clicked value"," value "+countClick);
+        } */
 
-        } else {
-            countClick = 0;
-        }
+        //countClick is for checking total next buttonClick
+        countClick = mySharedPref.getInt("countButtonClick");  //initially for first question it will start from 1 before clicking next button
+        countClick = countClick + 1;
+        mySharedPref.putInt("countButtonClick", countClick);
+        Log.e("clicked value"," value "+countClick);
 
-        if (mySharedPref.getInt("countButtonClick") == 5) {
+        //condition for max number of question
+        if (mySharedPref.getInt("countButtonClick") == 5) {  //5 is the max number of question
             buttonNext.setVisibility(View.GONE);
             btnSubmit.setVisibility(View.VISIBLE);
         }
+
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -241,7 +243,7 @@ public class QuestionActivity extends AppCompatActivity {
                 mySharedPref.putInt("passingValue", totalNumber);
                 Log.e("total number ", "btnSubmit "+totalNumber);
                 Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
-                intent1.putExtra("totalQuestion", mySharedPref.getInt("countButtonClick"));
+                intent1.putExtra("totalQuestion", countClick);
                 startActivity(intent1);
             }
         });
