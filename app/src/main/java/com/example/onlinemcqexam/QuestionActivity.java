@@ -3,7 +3,10 @@ package com.example.onlinemcqexam;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,8 +19,11 @@ import android.widget.Toast;
 
 import com.example.onlinemcqexam.model.ApiInterface;
 import com.example.onlinemcqexam.model.Response;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,7 +35,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class QuestionActivity extends AppCompatActivity {
-    final int totalNumberOfRadioButton = 4;//total number of RadioButtons
+    final int totalNumberOfRadioButton = 4;  //total number of RadioButtons
     RadioButton[] radioButton;  //Array of radioButtons
     RadioGroup radioGroup;
 
@@ -53,6 +59,8 @@ public class QuestionActivity extends AppCompatActivity {
 
     int countClick;
 
+    int changeResponseIndex;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +78,79 @@ public class QuestionActivity extends AppCompatActivity {
         tvQuestion = findViewById(R.id.tvQuestionAct);
         radioGroup = findViewById(R.id.radGroup);
         buttonNext = findViewById(R.id.btnNext);
-        btnSubmit=findViewById(R.id.btnSubmit);
+        btnSubmit = findViewById(R.id.btnSubmit);
 
         //getting selected category from MainActivity
         Intent intent = getIntent();
         selectedCategory = intent.getStringExtra("categoryName");
 
-        //Api code
-        networkLibraryInitializer();
-        getData();
+        //in if() condition is for calling the API only once for response value 0, save the response in a String in getData() which has 5 values/index/questions
+        //in else condition convert the saved String response to Json object again and show the value from index 1 to 5 by calling the same activity again & again
+        if (mySharedPref.getInt("countClickValueIndex") == 0) {
+            Toast.makeText(QuestionActivity.this, "response successful online  index " + changeResponseIndex, Toast.LENGTH_SHORT).show();
+
+            networkLibraryInitializer();
+            getData();
+            changeResponseIndex = 1; //this variable is for changing response index everytime dynamically
+            mySharedPref.putInt("countClickValueIndex", changeResponseIndex);
+
+        } else {
+            changeResponseIndex = mySharedPref.getInt("countClickValueIndex");
+            // Toast.makeText(QuestionActivity.this, "response successful offline index value " + changeResponseIndex, Toast.LENGTH_SHORT).show();
+
+
+            //converting string value saved in shared preference to Json object again
+            ArrayList<Response> responsePojo = new Gson().fromJson(mySharedPref.getString("stringKey"), new TypeToken<List<Response>>() {
+            }.getType());
+
+            tvQuestion.setText(responsePojo.get(changeResponseIndex).getQuestion());  //setting question to textView
+
+            //getting answers from API & keeping answers to String variables
+            correctAns = responsePojo.get(changeResponseIndex).getCorrectAnswer();
+            wrongAns1 = responsePojo.get(changeResponseIndex).getIncorrectAnswers().get(0);
+            wrongAns2 = responsePojo.get(changeResponseIndex).getIncorrectAnswers().get(1);
+            wrongAns3 = responsePojo.get(changeResponseIndex).getIncorrectAnswers().get(2);
+
+            Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
+
+
+            // Toast.makeText(QuestionActivity.this, "response successful offline " + countClick, Toast.LENGTH_SHORT).show();
+
+            String[] options = {wrongAns1, wrongAns2, wrongAns3, correctAns}; //keeping all options in array
+
+            //Initializing the RadioButtons
+            radioButton = new RadioButton[totalNumberOfRadioButton];
+
+            for (int i = 0; i < totalNumberOfRadioButton; i++) {
+                radioButton[i] = new RadioButton(QuestionActivity.this);
+
+                //options are being loaded here in radioButtons
+                radioButton[i].setText(options[i]);
+            }
+
+            //Random Swapping of the radioButtons
+            for (int i = 0; i < 4; i++) {    //this loop is randomly changing values 4 times
+                int swap_ind1 = ((int) (Math.random() * 10) % totalNumberOfRadioButton);
+                int swap_ind2 = ((int) (Math.random() * 10) % totalNumberOfRadioButton);
+                RadioButton temp = radioButton[swap_ind1];
+                radioButton[swap_ind1] = radioButton[swap_ind2];
+                radioButton[swap_ind2] = temp;
+            }
+
+            //Adding RadioButtons in RadioGroup
+            for (int i = 0; i < totalNumberOfRadioButton; i++) {
+                radioGroup.addView(radioButton[i]);
+            }
+
+            changeResponseIndex = changeResponseIndex + 1;
+            mySharedPref.putInt("countClickValueIndex", changeResponseIndex);
+
+        }
 
         //method to check answer & passing marks
         checkingAnswer();
+
+
     }
 
     private void networkLibraryInitializer() {
@@ -103,17 +172,25 @@ public class QuestionActivity extends AppCompatActivity {
     private void getData() {
         loadingProgressBarDialog.startProgressBarLoading();  //progressBar
 
-        Call<ArrayList<Response>> responseQuestions = apiInterface.getQuestions(selectedCategory, 1);
+        Call<ArrayList<Response>> responseQuestions = apiInterface.getQuestions(selectedCategory, 5);
         responseQuestions.enqueue(new Callback<ArrayList<Response>>() {
             @Override
             public void onResponse(Call<ArrayList<Response>> call, retrofit2.Response<ArrayList<Response>> response) {
                 ArrayList<Response> responses = response.body();
 
+                //converting response into string & saving that string to shared preference
+                Gson gson = new Gson();
+                String saveConvertedString = gson.toJson(response.body());
+                mySharedPref.putString("stringKey", saveConvertedString);
+
+                tvQuestion.setText(responses.get(changeResponseIndex - 1).getQuestion());  //setting question to textView
+
+
                 //getting answers from API & keeping answers to String variables
-                correctAns = responses.get(0).getCorrectAnswer();
-                wrongAns1 = responses.get(0).getIncorrectAnswers().get(0);
-                wrongAns2 = responses.get(0).getIncorrectAnswers().get(1);
-                wrongAns3 = responses.get(0).getIncorrectAnswers().get(2);
+                correctAns = responses.get(changeResponseIndex - 1).getCorrectAnswer(); //-1 is for matching the requirement
+                wrongAns1 = responses.get(changeResponseIndex - 1).getIncorrectAnswers().get(0);
+                wrongAns2 = responses.get(changeResponseIndex - 1).getIncorrectAnswers().get(1);
+                wrongAns3 = responses.get(changeResponseIndex - 1).getIncorrectAnswers().get(2);
 
                 String[] options = {wrongAns1, wrongAns2, wrongAns3, correctAns}; //keeping all options in array
 
@@ -126,7 +203,6 @@ public class QuestionActivity extends AppCompatActivity {
                     //options are being loaded here in radioButtons
                     radioButton[i].setText(options[i]);
                 }
-
 
                 //Random Swapping of the radioButtons
                 for (int i = 0; i < 4; i++) {    //this loop is randomly changing values 4 times
@@ -142,11 +218,8 @@ public class QuestionActivity extends AppCompatActivity {
                     radioGroup.addView(radioButton[i]);
                 }
 
-                tvQuestion.setText(responses.get(0).getQuestion());  //setting question to textView
 
-                // questionID = responses.get(0).getId();
                 Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
-                // Toast.makeText(QuestionActivity.this, "Response successful for Question act", Toast.LENGTH_SHORT).show();
 
                 loadingProgressBarDialog.dismissProgressBarDialog();
 
@@ -188,8 +261,6 @@ public class QuestionActivity extends AppCompatActivity {
         } else {
             totalNumber = 0;
         }
-
-
         Log.e("Total number", " number " + totalNumber);
 
         buttonNext.setOnClickListener(new View.OnClickListener() {
@@ -211,23 +282,14 @@ public class QuestionActivity extends AppCompatActivity {
                 Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
 
                 finish();
-
             }
         });
-
-
-        //code for counting next button click, handling and passing data when next & submit buttons are clicked
-       /* if (mySharedPref.getInt("countButtonClick") != null) {
-            //Log.e("clicked value"," value "+mySharedPref.getInt("countButtonClick"));
-            countClick = mySharedPref.getInt("countButtonClick");
-            countClick = countClick + 1;
-        } */
 
         //countClick is for checking total next buttonClick
         countClick = mySharedPref.getInt("countButtonClick");  //initially for first question it will start from 1 before clicking next button
         countClick = countClick + 1;
         mySharedPref.putInt("countButtonClick", countClick);
-        Log.e("clicked value"," value "+countClick);
+        Log.e("clicked value", " value " + countClick);
 
         //condition for max number of question
         if (mySharedPref.getInt("countButtonClick") == 5) {  //5 is the max number of question
@@ -240,7 +302,7 @@ public class QuestionActivity extends AppCompatActivity {
             public void onClick(View view) {
                 totalNumber = totalNumber + 5;
                 mySharedPref.putInt("totalNumberForCorrectAns", totalNumber);
-                Log.e("total number ", "btnSubmit "+totalNumber);
+                Log.e("total number ", "btnSubmit " + totalNumber);
                 Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
                 intent1.putExtra("totalQuestion", countClick);
                 startActivity(intent1);
@@ -258,17 +320,13 @@ public class QuestionActivity extends AppCompatActivity {
             }
         }, 8000);*/
     }
+
     @Override
     public void onBackPressed() {
-       // super.onBackPressed();
+        // super.onBackPressed();
         mySharedPref.clearData();
         startActivity(new Intent(QuestionActivity.this, MainActivity.class));
         finish();
-
-        //Code to exit app instantly
-        /*moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);*/
     }
 
 }
