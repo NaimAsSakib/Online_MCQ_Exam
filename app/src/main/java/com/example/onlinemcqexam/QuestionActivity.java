@@ -104,10 +104,8 @@ public class QuestionActivity extends AppCompatActivity {
             wrongAns2 = responsePojo.get(changeResponseIndex).getIncorrectAnswers().get(1);
             wrongAns3 = responsePojo.get(changeResponseIndex).getIncorrectAnswers().get(2);
 
-            Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
 
-
-            // Toast.makeText(QuestionActivity.this, "response successful offline " + countClick, Toast.LENGTH_SHORT).show();
 
             String[] options = {wrongAns1, wrongAns2, wrongAns3, correctAns}; //keeping all options in array
 
@@ -212,7 +210,7 @@ public class QuestionActivity extends AppCompatActivity {
                 }
 
 
-                Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(QuestionActivity.this, "Correct ans " + correctAns, Toast.LENGTH_SHORT).show();
 
                 loadingProgressBarDialog.dismissProgressBarDialog();
 
@@ -272,7 +270,7 @@ public class QuestionActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
                 startActivity(intent);
 
-                Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
+               // Toast.makeText(QuestionActivity.this, "Total number " + totalNumber, Toast.LENGTH_SHORT).show();
 
                 finish();
             }

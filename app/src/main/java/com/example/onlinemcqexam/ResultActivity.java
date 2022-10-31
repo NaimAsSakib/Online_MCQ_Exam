@@ -41,7 +41,7 @@ public class ResultActivity extends AppCompatActivity {
         }
         totalIncorrectAnswer=totalQuestionAsked-totalCorrectAnswer;
 
-        Toast.makeText(ResultActivity.this,"total correct num "+totalMarksObtained,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(ResultActivity.this,"total correct num "+totalMarksObtained,Toast.LENGTH_SHORT).show();
 
         tvMarksObtained.setText(Integer.toString(totalMarksObtained));
         tvTotalMarks.setText(Integer.toString(fullMarks));
