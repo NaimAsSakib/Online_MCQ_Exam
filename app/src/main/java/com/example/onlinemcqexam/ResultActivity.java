@@ -29,9 +29,10 @@ public class ResultActivity extends AppCompatActivity {
         tvTotalIncorrectAnswer=findViewById(R.id.totalIncorrectAnsNumber);
 
         numberPerQuestion=5;
-        totalMarksObtained= mySharedPref.getInt("passingValue")-5;
+        totalMarksObtained= mySharedPref.getInt("totalNumberForCorrectAns")-5;
         totalQuestionAsked=mySharedPref.getInt("countButtonClick");
         fullMarks=totalQuestionAsked*numberPerQuestion;
+
         Log.e("total marks"," "+totalMarksObtained);
         Log.e("total question asked"," "+totalQuestionAsked);
         Log.e("total full marks"," "+fullMarks);

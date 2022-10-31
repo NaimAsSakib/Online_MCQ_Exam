@@ -183,8 +183,8 @@ public class QuestionActivity extends AppCompatActivity {
         });
 
         //condition for checking previously saved mark for correct ans
-        if (mySharedPref.getInt("passingValue") != null) {
-            totalNumber = mySharedPref.getInt("passingValue");
+        if (mySharedPref.getInt("totalNumberForCorrectAns") != null) {
+            totalNumber = mySharedPref.getInt("totalNumberForCorrectAns");
 
         } else {
             totalNumber = 0;
@@ -201,7 +201,7 @@ public class QuestionActivity extends AppCompatActivity {
                 if (radioButtonSelectedAnswer != null) {
                     if (radioButtonSelectedAnswer.equals(correctAns) && checkClick) {
                         totalNumber = totalNumber + 5;
-                        mySharedPref.putInt("passingValue", totalNumber);
+                        mySharedPref.putInt("totalNumberForCorrectAns", totalNumber);
 
                     }
                 }
@@ -240,7 +240,7 @@ public class QuestionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 totalNumber = totalNumber + 5;
-                mySharedPref.putInt("passingValue", totalNumber);
+                mySharedPref.putInt("totalNumberForCorrectAns", totalNumber);
                 Log.e("total number ", "btnSubmit "+totalNumber);
                 Intent intent1 = new Intent(QuestionActivity.this, ResultActivity.class);
                 intent1.putExtra("totalQuestion", countClick);
