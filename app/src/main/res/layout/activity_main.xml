@@ -11,7 +11,9 @@
         android:id="@+id/tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        app:layout_goneMarginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="15dp"
         android:layout_marginStart="10dp"
         android:text="Please select your favorite area for questions"
         android:textColor="@color/black"
@@ -19,6 +21,7 @@
         android:textSize="18sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+
          />
 
     <androidx.recyclerview.widget.RecyclerView
