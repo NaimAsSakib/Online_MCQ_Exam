@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         responseCategoryDetails.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                // See Json & pojo ResponseCategory data first, Json is object type but I can't get the keys in adapter. It's backend fault. Bad but rare type Api.
+                // See Json & pojo 'ResponseCategory' data first, Json is object type but I can't get the keys in adapter. It's backend fault. Bad but rare type Api.
                 // I need the keys in rcv adapter, not the List<> type values within the keys. So, General API call methods won't work.
 
                 //Means I can't use Pojo for getting data as pojo/json is faulty. Rather I have to convert full response body into String.
